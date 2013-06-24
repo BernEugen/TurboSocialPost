@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TurboSocialPost</string>
+    <string name="app_id">442641962498462</string>
+
+    <string name="post_facebook">Post to Facebook</string>
+    <string name="post_twitter">Post to Twitter</string>
+
+    <string name="login_facebook">Logged in Facebook:</string>
+    <string name="login_twitter">Logged in Twitter:</string>
+    <string name="login_status_facebook">\u0020 false</string>
+    <string name="login_status_twitter">\u0020 false</string>
+
+    <string name="menu_title_facebook">Login to Facebook</string>
+    <string name="menu_title_facebook_logout">Logout Facebook</string>
+</resources>
