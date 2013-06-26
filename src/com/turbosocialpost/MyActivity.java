@@ -2,6 +2,7 @@ package com.turbosocialpost;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,10 +21,13 @@ import java.util.List;
 
 public class MyActivity extends Activity {
 
-    Button postButton;
-    EditText postMessage;
-    TextView loginFacebookStatus;
-    TextView loginTwitterStatus;
+    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
+
+    private Button postButton;
+    private EditText postMessage;
+    private TextView loginFacebookStatus;
+    private TextView loginTwitterStatus;
+    private String userName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,20 +47,32 @@ public class MyActivity extends Activity {
         });
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        loginFacebookStatus.setText(" " + userName);
+    }
+
     private void postToFacebook() {
 
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
+
+            List<String> permissions = session.getPermissions();
+            if (!hasPublishPermissionFacebook(PERMISSIONS, permissions)) {
+                Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, PERMISSIONS);
+                session.requestNewPublishPermissions(newPermissionsRequest);
+            }
+
             String message = postMessage.getText().toString();
             Bundle postParams = new Bundle();
             postParams.putString("message", message);
 
-            postMessage.setText("");
-            Toast.makeText(getApplicationContext(), "Posted", Toast.LENGTH_SHORT).show();
-
             Request request = new Request(session, "me/feed", postParams, HttpMethod.POST);
             RequestAsyncTask task = new RequestAsyncTask(request);
             task.execute();
+
+            postMessage.setText("");
         }
         else {
             Toast.makeText(getApplicationContext(), "Please login", Toast.LENGTH_SHORT).show();
@@ -74,6 +90,7 @@ public class MyActivity extends Activity {
                         @Override
                         public void onCompleted(GraphUser user, Response response) {
                             if (user != null) {
+                                userName = user.getName();
                                 loginFacebookStatus.setText(" " + user.getName());
                             }
                         }
@@ -81,10 +98,6 @@ public class MyActivity extends Activity {
                 }
             }
         });
-
-//        Session session = Session.getActiveSession();
-//        Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, Arrays.asList("publish_actions"));
-//        session.requestNewPublishPermissions(newPermissionsRequest);
     }
 
     @Override
@@ -104,7 +117,7 @@ public class MyActivity extends Activity {
 
             case R.id.menu_logout_facebook:
                 Session session = Session.getActiveSession();
-                if (!session.isClosed()) {
+                if (session != null && !session.isClosed()) {
                     session.closeAndClearTokenInformation();
                     loginFacebookStatus.setText(R.string.login_status_facebook);
                 }
@@ -117,6 +130,27 @@ public class MyActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        Session session = Session.getActiveSession();
+//        Session.saveSession(session, outState);
+//    }
+
+    private boolean hasPublishPermissionFacebook(Collection<String> listStatus, Collection<String> listPermissions) {
+        for (String permissionStatus : listStatus) {
+            if (!listPermissions.contains(permissionStatus)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
