@@ -2,8 +2,11 @@ package com.turbosocialpost;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.GraphUser;
+import com.turbosocialpost.Twitter.PrepareRequestTokenActivity;
+import com.turbosocialpost.Twitter.TwitterUtils;
+import oauth.signpost.OAuth;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,58 +29,73 @@ public class MyActivity extends Activity {
 
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
-    private Button postButton;
+    private Button postFacebookButton;
+    private Button postTwitterButton;
     private EditText postMessage;
     private TextView loginFacebookStatus;
     private TextView loginTwitterStatus;
     private String userName;
+    private SharedPreferences preferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         postMessage = (EditText) findViewById(R.id.postField);
         loginFacebookStatus = (TextView) findViewById(R.id.login_status_facebook);
         loginTwitterStatus = (TextView) findViewById(R.id.login_status_twitter);
 
-        postButton = (Button) findViewById(R.id.postFacebook);
-        postButton.setOnClickListener(new View.OnClickListener() {
+        postFacebookButton = (Button) findViewById(R.id.postFacebook);
+        postFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 postToFacebook();
             }
         });
-    }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        loginFacebookStatus.setText(" " + userName);
+        postTwitterButton = (Button) findViewById(R.id.postTwitter);
+        postTwitterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postToTwitter();
+            }
+        });
     }
 
     private void postToFacebook() {
-
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
-
             String message = getMessage();
             Bundle postParams = new Bundle();
             postParams.putString("message", message);
-
             Request request = new Request(session, "me/feed", postParams, HttpMethod.POST);
             RequestAsyncTask task = new RequestAsyncTask(request);
             task.execute();
-
-            postMessage.setText("");
+            setEmptyText();
+            postedToast();
         }
         else {
-            Toast.makeText(getApplicationContext(), "Please login", Toast.LENGTH_SHORT).show();
+            alreadyLoggedToast();
         }
     }
 
-    public void logInFacebook() {
+    public void postToTwitter() {
+        if (TwitterUtils.isAuthenticated(preferences)) {
+            try {
+                TwitterUtils.sendTweet(preferences, getMessage());
+                setEmptyText();
+                postedToast();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        alreadyLoggedToast();
+    }
 
+    public void logInFacebook() {
         Session.openActiveSession(this, true, new Session.StatusCallback() {
             @Override
             public void call(Session session, SessionState state, Exception exception) {
@@ -92,8 +113,12 @@ public class MyActivity extends Activity {
                 }
             }
         });
-
         checkPublishPermisison();
+    }
+
+    public void logInTwitter() {
+        Intent intent = new Intent(getApplicationContext(), PrepareRequestTokenActivity.class);
+        startActivity(intent);
     }
 
     private void checkPublishPermisison() {
@@ -124,6 +149,14 @@ public class MyActivity extends Activity {
 
             case R.id.menu_logout_facebook:
                 logOutFacebook();
+                break;
+
+            case R.id.menu_login_twitter:
+                logInTwitter();
+                break;
+
+            case R.id.menu_logout_twitter:
+                logOutTwitter();
                 break;
         }
         return true;
@@ -157,8 +190,29 @@ public class MyActivity extends Activity {
         }
     }
 
+    public void logOutTwitter() {
+        if (TwitterUtils.isAuthenticated(preferences)) {
+            final Editor edit = preferences.edit();
+            edit.remove(OAuth.OAUTH_TOKEN);
+            edit.remove(OAuth.OAUTH_TOKEN_SECRET);
+            edit.commit();
+        }
+    }
+
     public String getMessage() {
         return postMessage.getText().toString();
+    }
+
+    public void setEmptyText() {
+        postMessage.setText("");
+    }
+
+    public void alreadyLoggedToast() {
+        Toast.makeText(getApplicationContext(), "Please login", Toast.LENGTH_SHORT).show();
+    }
+
+    public void postedToast() {
+        Toast.makeText(getApplicationContext(), "Posted", Toast.LENGTH_SHORT).show();
     }
 }
 
