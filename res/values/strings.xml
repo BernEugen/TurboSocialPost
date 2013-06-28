@@ -13,4 +13,8 @@
 
     <string name="menu_title_facebook">Login to Facebook</string>
     <string name="menu_title_facebook_logout">Logout Facebook</string>
+
+    <string name="menu_title_twitter">Login to Twitter</string>
+    <string name="menu_title_twitter_logout">Logout Twitter</string>
+
 </resources>

@@ -58,13 +58,7 @@ public class MyActivity extends Activity {
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
 
-            List<String> permissions = session.getPermissions();
-            if (!hasPublishPermissionFacebook(PERMISSIONS, permissions)) {
-                Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, PERMISSIONS);
-                session.requestNewPublishPermissions(newPermissionsRequest);
-            }
-
-            String message = postMessage.getText().toString();
+            String message = getMessage();
             Bundle postParams = new Bundle();
             postParams.putString("message", message);
 
@@ -79,7 +73,7 @@ public class MyActivity extends Activity {
         }
     }
 
-    public void openSessionFacebook() {
+    public void logInFacebook() {
 
         Session.openActiveSession(this, true, new Session.StatusCallback() {
             @Override
@@ -98,6 +92,19 @@ public class MyActivity extends Activity {
                 }
             }
         });
+
+        checkPublishPermisison();
+    }
+
+    private void checkPublishPermisison() {
+        Session session = Session.getActiveSession();
+        if (session != null && session.isOpened()) {
+            List<String> permissions = session.getPermissions();
+            if (!hasPublishPermissionFacebook(PERMISSIONS, permissions)) {
+                Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, PERMISSIONS);
+                session.requestNewPublishPermissions(newPermissionsRequest);
+            }
+        }
     }
 
     @Override
@@ -112,15 +119,11 @@ public class MyActivity extends Activity {
 
         switch (item.getItemId()) {
             case R.id.menu_login_facebook:
-                openSessionFacebook();
+                logInFacebook();
                 break;
 
             case R.id.menu_logout_facebook:
-                Session session = Session.getActiveSession();
-                if (session != null && !session.isClosed()) {
-                    session.closeAndClearTokenInformation();
-                    loginFacebookStatus.setText(R.string.login_status_facebook);
-                }
+                logOutFacebook();
                 break;
         }
         return true;
@@ -137,13 +140,6 @@ public class MyActivity extends Activity {
         super.onConfigurationChanged(newConfig);
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        Session session = Session.getActiveSession();
-//        Session.saveSession(session, outState);
-//    }
-
     private boolean hasPublishPermissionFacebook(Collection<String> listStatus, Collection<String> listPermissions) {
         for (String permissionStatus : listStatus) {
             if (!listPermissions.contains(permissionStatus)) {
@@ -152,8 +148,19 @@ public class MyActivity extends Activity {
         }
         return true;
     }
-}
 
+    public void logOutFacebook() {
+        Session session = Session.getActiveSession();
+        if (session != null && !session.isClosed()) {
+            session.closeAndClearTokenInformation();
+            loginFacebookStatus.setText(R.string.login_status_facebook);
+        }
+    }
+
+    public String getMessage() {
+        return postMessage.getText().toString();
+    }
+}
 
 
 
