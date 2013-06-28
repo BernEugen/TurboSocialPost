@@ -5,9 +5,12 @@ import oauth.signpost.OAuth;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
 public class TwitterUtils {
+
+    private static String userNameTwitter;
 
 	public static boolean isAuthenticated(SharedPreferences prefs) {
 
@@ -18,6 +21,15 @@ public class TwitterUtils {
 		Twitter twitter = new TwitterFactory().getInstance();
 		twitter.setOAuthConsumer(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET);
 		twitter.setOAuthAccessToken(a);
+
+        long userId;
+        try {
+            userId = twitter.getId();
+            User user = twitter.showUser(userId);
+            userNameTwitter = user.getName();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
 
         if (token == null || token.length() == 0 || secret == null || secret.length() == 0) {
             return false;
@@ -36,4 +48,8 @@ public class TwitterUtils {
 		twitter.setOAuthAccessToken(a);
         twitter.updateStatus(msg);
 	}
+
+    public static String getUserNameTwitter() {
+        return userNameTwitter;
+    }
 }

@@ -34,7 +34,7 @@ public class MyActivity extends Activity {
     private EditText postMessage;
     private TextView loginFacebookStatus;
     private TextView loginTwitterStatus;
-    private String userName;
+    private String userNameFacebook;
     private SharedPreferences preferences;
 
     @Override
@@ -65,6 +65,13 @@ public class MyActivity extends Activity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showUserLoginFacebook();
+        showUserLoginTwitter();
+    }
+
     private void postToFacebook() {
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
@@ -78,7 +85,7 @@ public class MyActivity extends Activity {
             postedToast();
         }
         else {
-            alreadyLoggedToast();
+            notLoggedToast();
         }
     }
 
@@ -91,8 +98,9 @@ public class MyActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            notLoggedToast();
         }
-        alreadyLoggedToast();
     }
 
     public void logInFacebook() {
@@ -105,7 +113,7 @@ public class MyActivity extends Activity {
                         @Override
                         public void onCompleted(GraphUser user, Response response) {
                             if (user != null) {
-                                userName = user.getName();
+                                userNameFacebook = user.getName();
                                 loginFacebookStatus.setText(" " + user.getName());
                             }
                         }
@@ -117,8 +125,13 @@ public class MyActivity extends Activity {
     }
 
     public void logInTwitter() {
-        Intent intent = new Intent(getApplicationContext(), PrepareRequestTokenActivity.class);
-        startActivity(intent);
+        if (!TwitterUtils.isAuthenticated(preferences)) {
+            Intent intent = new Intent(getApplicationContext(), PrepareRequestTokenActivity.class);
+            startActivity(intent);
+            showUserLoginTwitter();
+        } else {
+            alreadyLoggedToast();
+        }
     }
 
     private void checkPublishPermisison() {
@@ -186,7 +199,7 @@ public class MyActivity extends Activity {
         Session session = Session.getActiveSession();
         if (session != null && !session.isClosed()) {
             session.closeAndClearTokenInformation();
-            loginFacebookStatus.setText(R.string.login_status_facebook);
+            loginFacebookStatus.setText("");
         }
     }
 
@@ -196,6 +209,7 @@ public class MyActivity extends Activity {
             edit.remove(OAuth.OAUTH_TOKEN);
             edit.remove(OAuth.OAUTH_TOKEN_SECRET);
             edit.commit();
+            loginTwitterStatus.setText("");
         }
     }
 
@@ -207,12 +221,24 @@ public class MyActivity extends Activity {
         postMessage.setText("");
     }
 
-    public void alreadyLoggedToast() {
+    public void notLoggedToast() {
         Toast.makeText(getApplicationContext(), "Please login", Toast.LENGTH_SHORT).show();
+    }
+
+    public void alreadyLoggedToast() {
+        Toast.makeText(getApplicationContext(), "Already logged", Toast.LENGTH_SHORT).show();
     }
 
     public void postedToast() {
         Toast.makeText(getApplicationContext(), "Posted", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showUserLoginFacebook() {
+        loginFacebookStatus.setText(" " + userNameFacebook);
+    }
+
+    public void showUserLoginTwitter() {
+        loginTwitterStatus.setText(" " + TwitterUtils.getUserNameTwitter());
     }
 }
 
