@@ -128,10 +128,10 @@ public class MyActivity extends Activity {
         if (!TwitterUtils.isAuthenticated(preferences)) {
             Intent intent = new Intent(getApplicationContext(), PrepareRequestTokenActivity.class);
             startActivity(intent);
-            showUserLoginTwitter();
         } else {
             alreadyLoggedToast();
         }
+        showUserLoginTwitter();
     }
 
     private void checkPublishPermisison() {
@@ -238,7 +238,7 @@ public class MyActivity extends Activity {
     }
 
     public void showUserLoginTwitter() {
-        loginTwitterStatus.setText(" " + TwitterUtils.getUserNameTwitter());
+        loginTwitterStatus.setText(" " + TwitterUtils.getUserNameTwitter(preferences));
     }
 }
 
