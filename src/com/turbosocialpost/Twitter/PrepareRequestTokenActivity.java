@@ -37,10 +37,10 @@ public class PrepareRequestTokenActivity extends Activity {
 	@Override
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent); 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences preferencesIntent = PreferenceManager.getDefaultSharedPreferences(this);
 		final Uri uri = intent.getData();
 		if (uri != null && uri.getScheme().equals(Constants.OAUTH_CALLBACK_SCHEME)) {
-			new RetrieveAccessTokenTask(this, consumer, provider, prefs).execute(uri);
+			new RetrieveAccessTokenTask(this, consumer, provider, preferencesIntent).execute(uri);
 			finish();	
 		}
 	}
@@ -50,13 +50,13 @@ public class PrepareRequestTokenActivity extends Activity {
 		private Context	context;
 		private OAuthProvider provider;
 		private OAuthConsumer consumer;
-		private SharedPreferences prefs;
+		private SharedPreferences preferences;
 		
-		public RetrieveAccessTokenTask(Context context, OAuthConsumer consumer,OAuthProvider provider, SharedPreferences prefs) {
+		public RetrieveAccessTokenTask(Context context, OAuthConsumer consumer,OAuthProvider provider, SharedPreferences preferences) {
 			this.context = context;
 			this.consumer = consumer;
 			this.provider = provider;
-			this.prefs=prefs;
+			this.preferences = preferences;
 		}
 
 		@Override
@@ -67,36 +67,26 @@ public class PrepareRequestTokenActivity extends Activity {
 			try {
 				provider.retrieveAccessToken(consumer, oauth_verifier);
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences preferencesBackground = PreferenceManager.getDefaultSharedPreferences(context);
                 AccessToken a = new AccessToken(consumer.getToken(), consumer.getTokenSecret());
 
-				final Editor edit = prefs.edit();
+				final Editor edit = preferencesBackground.edit();
                 edit.putString(OAuth.OAUTH_TOKEN, consumer.getToken());
                 edit.putString(OAuth.OAUTH_TOKEN_SECRET, consumer.getTokenSecret());
                 edit.commit();
 
-				String token = prefs.getString(OAuth.OAUTH_TOKEN, "");
-				String secret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
+				String token = preferencesBackground.getString(OAuth.OAUTH_TOKEN, "");
+				String secret = preferencesBackground.getString(OAuth.OAUTH_TOKEN_SECRET, "");
 
 				consumer.setTokenWithSecret(token, secret);
 				context.startActivity(new Intent(context, MyActivity.class));
 
-				executeAfterAccessTokenRetrieval();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 			return null;
 		}
-
-		private void executeAfterAccessTokenRetrieval() {
-			String msg = getIntent().getExtras().getString("tweet_msg");
-			try {
-				TwitterUtils.sendTweet(prefs, msg);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}	
+	}
 	
 }

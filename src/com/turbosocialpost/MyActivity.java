@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.*;
+import com.facebook.android.Facebook;
+import com.facebook.internal.Utility;
 import com.facebook.model.GraphUser;
 import com.turbosocialpost.Twitter.PrepareRequestTokenActivity;
 import com.turbosocialpost.Twitter.TwitterUtils;
@@ -34,7 +36,7 @@ public class MyActivity extends Activity {
     private EditText postMessage;
     private TextView loginFacebookStatus;
     private TextView loginTwitterStatus;
-    private String userNameFacebook;
+    private String userNameFacebook = "";
     private SharedPreferences preferences;
 
     @Override
@@ -109,7 +111,6 @@ public class MyActivity extends Activity {
             public void call(Session session, SessionState state, Exception exception) {
                 if (session.isOpened()) {
                     Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-
                         @Override
                         public void onCompleted(GraphUser user, Response response) {
                             if (user != null) {
@@ -199,6 +200,7 @@ public class MyActivity extends Activity {
         Session session = Session.getActiveSession();
         if (session != null && !session.isClosed()) {
             session.closeAndClearTokenInformation();
+            Utility.clearFacebookCookies(this);
             loginFacebookStatus.setText("");
         }
     }

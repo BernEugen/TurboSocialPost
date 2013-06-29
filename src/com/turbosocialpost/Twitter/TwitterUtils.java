@@ -45,7 +45,9 @@ public class TwitterUtils {
         try {
             userId = twitter.getId();
             User user = twitter.showUser(userId);
-            return user.getName();
+            String userName = "";
+            userName = user.getName();
+            return userName;
 
         } catch (TwitterException e) {
             e.printStackTrace();
