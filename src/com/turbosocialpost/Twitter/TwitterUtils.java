@@ -18,13 +18,12 @@ public class TwitterUtils {
             return false;
         }
 
-//        Twitter twitter = getBaseInformation(token, secret);
         return true;
 	}
 	
 	public static void sendTweet(SharedPreferences prefs, String msg) throws Exception {
-		String token = prefs.getString(OAuth.OAUTH_TOKEN, "");
-		String secret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
+        String token = prefs.getString(OAuth.OAUTH_TOKEN, "");
+        String secret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
         Twitter twitter = getBaseInformation(token, secret);
         twitter.updateStatus(msg);
 	}
@@ -41,13 +40,10 @@ public class TwitterUtils {
         String token = prefs.getString(OAuth.OAUTH_TOKEN, "");
         String secret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
         Twitter twitter = getBaseInformation(token, secret);
-        long userId;
         try {
-            userId = twitter.getId();
+            long userId = twitter.getId();
             User user = twitter.showUser(userId);
-            String userName = "";
-            userName = user.getName();
-            return userName;
+            return user.getName();
 
         } catch (TwitterException e) {
             e.printStackTrace();

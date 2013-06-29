@@ -19,9 +19,9 @@ import twitter4j.auth.AccessToken;
 
 public class PrepareRequestTokenActivity extends Activity {
 
-    private OAuthConsumer consumer; 
+    private OAuthConsumer consumer;
     private OAuthProvider provider;
-    
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,10 +37,10 @@ public class PrepareRequestTokenActivity extends Activity {
 	@Override
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent); 
-		SharedPreferences preferencesIntent = PreferenceManager.getDefaultSharedPreferences(this);
+//		SharedPreferences preferencesIntent = PreferenceManager.getDefaultSharedPreferences(this);
 		final Uri uri = intent.getData();
 		if (uri != null && uri.getScheme().equals(Constants.OAUTH_CALLBACK_SCHEME)) {
-			new RetrieveAccessTokenTask(this, consumer, provider, preferencesIntent).execute(uri);
+			new RetrieveAccessTokenTask(this, consumer, provider).execute(uri);
 			finish();	
 		}
 	}
@@ -50,13 +50,11 @@ public class PrepareRequestTokenActivity extends Activity {
 		private Context	context;
 		private OAuthProvider provider;
 		private OAuthConsumer consumer;
-		private SharedPreferences preferences;
-		
-		public RetrieveAccessTokenTask(Context context, OAuthConsumer consumer,OAuthProvider provider, SharedPreferences preferences) {
+
+		public RetrieveAccessTokenTask(Context context, OAuthConsumer consumer,OAuthProvider provider) {
 			this.context = context;
 			this.consumer = consumer;
 			this.provider = provider;
-			this.preferences = preferences;
 		}
 
 		@Override
@@ -68,8 +66,6 @@ public class PrepareRequestTokenActivity extends Activity {
 				provider.retrieveAccessToken(consumer, oauth_verifier);
 
                 SharedPreferences preferencesBackground = PreferenceManager.getDefaultSharedPreferences(context);
-                AccessToken a = new AccessToken(consumer.getToken(), consumer.getTokenSecret());
-
 				final Editor edit = preferencesBackground.edit();
                 edit.putString(OAuth.OAUTH_TOKEN, consumer.getToken());
                 edit.putString(OAuth.OAUTH_TOKEN_SECRET, consumer.getTokenSecret());

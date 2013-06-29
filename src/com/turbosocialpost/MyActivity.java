@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.*;
-import com.facebook.android.Facebook;
 import com.facebook.internal.Utility;
 import com.facebook.model.GraphUser;
 import com.turbosocialpost.Twitter.PrepareRequestTokenActivity;
@@ -36,7 +35,8 @@ public class MyActivity extends Activity {
     private EditText postMessage;
     private TextView loginFacebookStatus;
     private TextView loginTwitterStatus;
-    private String userNameFacebook = "";
+    private String userNameFacebook;
+    private String userNameTwitter;
     private SharedPreferences preferences;
 
     @Override
@@ -115,7 +115,7 @@ public class MyActivity extends Activity {
                         public void onCompleted(GraphUser user, Response response) {
                             if (user != null) {
                                 userNameFacebook = user.getName();
-                                loginFacebookStatus.setText(" " + user.getName());
+                                loginFacebookStatus.setText(" " + userNameFacebook);
                             }
                         }
                     });
@@ -132,7 +132,6 @@ public class MyActivity extends Activity {
         } else {
             alreadyLoggedToast();
         }
-        showUserLoginTwitter();
     }
 
     private void checkPublishPermisison() {
@@ -211,7 +210,7 @@ public class MyActivity extends Activity {
             edit.remove(OAuth.OAUTH_TOKEN);
             edit.remove(OAuth.OAUTH_TOKEN_SECRET);
             edit.commit();
-            loginTwitterStatus.setText("");
+            showUserLoginTwitter();
         }
     }
 
@@ -236,11 +235,27 @@ public class MyActivity extends Activity {
     }
 
     public void showUserLoginFacebook() {
-        loginFacebookStatus.setText(" " + userNameFacebook);
+        Session session = Session.getActiveSession();
+        if (session != null) {
+            Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+                @Override
+                public void onCompleted(GraphUser user, Response response) {
+                    if (user != null) {
+                        userNameFacebook = user.getName();
+                        loginFacebookStatus.setText(" " + userNameFacebook);
+                    }
+                }
+            });
+        }
     }
 
     public void showUserLoginTwitter() {
-        loginTwitterStatus.setText(" " + TwitterUtils.getUserNameTwitter(preferences));
+        userNameTwitter = TwitterUtils.getUserNameTwitter(preferences);
+        if (userNameTwitter == null) {
+            loginTwitterStatus.setText("");
+        } else {
+            loginTwitterStatus.setText(" " + userNameTwitter);
+        }
     }
 }
 
