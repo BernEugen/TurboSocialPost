@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.internal.Utility;
 import com.facebook.model.GraphUser;
+import com.turbosocialpost.Maps.GoogleMapsActivity;
 import com.turbosocialpost.Twitter.PrepareRequestTokenActivity;
 import com.turbosocialpost.Twitter.TwitterUtils;
 import oauth.signpost.OAuth;
@@ -32,6 +33,7 @@ public class MyActivity extends Activity {
 
     private Button postFacebookButton;
     private Button postTwitterButton;
+    private Button mapsButton;
     private EditText postMessage;
     private TextView loginFacebookStatus;
     private TextView loginTwitterStatus;
@@ -63,6 +65,15 @@ public class MyActivity extends Activity {
             @Override
             public void onClick(View v) {
                 postToTwitter();
+            }
+        });
+
+        mapsButton = (Button) findViewById(R.id.mapsButton);
+        mapsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*** Working on maps implementation */
+//                startActivity(new Intent(getApplicationContext(), GoogleMapsActivity.class));
             }
         });
     }

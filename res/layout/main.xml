@@ -76,4 +76,10 @@
 
     </LinearLayout>
 
+    <Button
+            android:id="@+id/mapsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/google_maps"></Button>
+
 </LinearLayout>

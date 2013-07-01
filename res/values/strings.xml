@@ -17,4 +17,6 @@
     <string name="menu_title_twitter">Login to Twitter</string>
     <string name="menu_title_twitter_logout">Logout Twitter</string>
 
+    <string name="google_maps">My Location</string>
+
 </resources>

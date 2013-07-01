@@ -36,8 +36,7 @@ public class PrepareRequestTokenActivity extends Activity {
 
 	@Override
 	public void onNewIntent(Intent intent) {
-		super.onNewIntent(intent); 
-//		SharedPreferences preferencesIntent = PreferenceManager.getDefaultSharedPreferences(this);
+		super.onNewIntent(intent);
 		final Uri uri = intent.getData();
 		if (uri != null && uri.getScheme().equals(Constants.OAUTH_CALLBACK_SCHEME)) {
 			new RetrieveAccessTokenTask(this, consumer, provider).execute(uri);
@@ -51,7 +50,7 @@ public class PrepareRequestTokenActivity extends Activity {
 		private OAuthProvider provider;
 		private OAuthConsumer consumer;
 
-		public RetrieveAccessTokenTask(Context context, OAuthConsumer consumer,OAuthProvider provider) {
+		public RetrieveAccessTokenTask(Context context, OAuthConsumer consumer, OAuthProvider provider) {
 			this.context = context;
 			this.consumer = consumer;
 			this.provider = provider;
@@ -80,7 +79,6 @@ public class PrepareRequestTokenActivity extends Activity {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 			return null;
 		}
 	}
