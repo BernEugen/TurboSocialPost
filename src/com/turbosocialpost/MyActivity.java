@@ -72,8 +72,7 @@ public class MyActivity extends Activity {
         mapsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*** Working on maps implementation */
-//                startActivity(new Intent(getApplicationContext(), GoogleMapsActivity.class));
+                startActivity(new Intent(getApplicationContext(), GoogleMapsActivity.class));
             }
         });
     }
