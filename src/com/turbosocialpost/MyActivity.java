@@ -1,10 +1,13 @@
 package com.turbosocialpost;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -82,6 +85,11 @@ public class MyActivity extends Activity {
         super.onResume();
         showUserLoginFacebook();
         showUserLoginTwitter();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     private void postToFacebook() {
@@ -165,22 +173,26 @@ public class MyActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.menu_login_facebook:
-                logInFacebook();
-                break;
+        if (isInternetConnected()) {
+            switch (item.getItemId()) {
+                case R.id.menu_login_facebook:
+                    logInFacebook();
+                    break;
 
-            case R.id.menu_logout_facebook:
-                logOutFacebook();
-                break;
+                case R.id.menu_logout_facebook:
+                    logOutFacebook();
+                    break;
 
-            case R.id.menu_login_twitter:
-                logInTwitter();
-                break;
+                case R.id.menu_login_twitter:
+                    logInTwitter();
+                    break;
 
-            case R.id.menu_logout_twitter:
-                logOutTwitter();
-                break;
+                case R.id.menu_logout_twitter:
+                    logOutTwitter();
+                    break;
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
         }
         return true;
     }
@@ -266,6 +278,12 @@ public class MyActivity extends Activity {
         } else {
             loginTwitterStatus.setText(" " + userNameTwitter);
         }
+    }
+
+    public boolean isInternetConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null;
     }
 }
 
