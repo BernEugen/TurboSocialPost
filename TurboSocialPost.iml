@@ -40,7 +40,9 @@
           <root url="jar://$MODULE_DIR$/libs/signpost-core-1.2.1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ideaLibSources/signpost-core-1.2.1.2-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -54,9 +56,17 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="android-support-v4" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://E:/SlavikDoc/android-sdks/extras/google/google_play_services_V7/libproject/google-play-services_lib/libs/google-play-services.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module" module-name="google-play-services_lib" />
-    <orderEntry type="library" name="google-play-services" level="project" />
+    <orderEntry type="library" name="android-support-v4" level="project" />
   </component>
 </module>
 

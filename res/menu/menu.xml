@@ -4,18 +4,18 @@
 
     <item android:id="@+id/menu_login_facebook"
           android:title="@string/menu_title_facebook"
-          android:showAsAction="always" />
+           />
 
     <item android:id="@+id/menu_logout_facebook"
           android:title="@string/menu_title_facebook_logout"
-          android:showAsAction="always" />
+           />
 
     <item android:id="@+id/menu_login_twitter"
           android:title="@string/menu_title_twitter"
-          android:showAsAction="always" />
+           />
 
     <item android:id="@+id/menu_logout_twitter"
           android:title="@string/menu_title_twitter_logout"
-          android:showAsAction="always" />
+           />
 
 </menu>

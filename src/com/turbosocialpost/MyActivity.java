@@ -132,7 +132,7 @@ public class MyActivity extends Activity {
                 }
             }
         });
-        checkPublishPermisison();
+        checkPublishPermission();
     }
 
     public void logInTwitter() {
@@ -144,7 +144,7 @@ public class MyActivity extends Activity {
         }
     }
 
-    private void checkPublishPermisison() {
+    private void checkPublishPermission() {
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
             List<String> permissions = session.getPermissions();
